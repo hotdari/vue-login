@@ -37,7 +37,7 @@ export default new Vuex.Store({
       state.isLoginError = true
     },
     //로그아웃
-    logout(state){
+    logout(state) {
       state.isLogin = false
       state.isLoginError = false
       state.userInfo = null
