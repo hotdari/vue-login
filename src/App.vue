@@ -34,9 +34,9 @@
       <v-toolbar-title>Application</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-menu offset-y v-if="isLogin" flat>
+        <v-menu offset-y v-if="isLogin">
           <template v-slot:activator="{ on }">
-            <v-btn slot="activator" color="primary" dark flat icon v-on="on">
+            <v-btn slot="activator" color="primary" dark icon v-on="on">
               <v-icon color="#ffffff">mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
@@ -53,7 +53,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <v-btn v-else router :to="{ name: 'login' }" dark flat>Log In</v-btn>
+        <v-btn v-else router :to="{ name: 'login' }" dark>Log In</v-btn>
       </v-toolbar-items>
     </v-app-bar>
 
