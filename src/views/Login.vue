@@ -9,7 +9,7 @@
           로그인이 완료되었습니다.
         </v-alert>
         <v-card>
-          <v-toolbar flat dark color="primary">
+          <v-toolbar dark color="primary">
             <v-toolbar-title>로그인</v-toolbar-title>
           </v-toolbar>
           <div class="pa-3">
@@ -29,6 +29,8 @@
               @click="login({ email: email, password: password })"
               >로그인</v-btn
             >
+
+            <v-btn @click="test">테스트</v-btn>
           </div>
         </v-card>
       </v-flex>
@@ -38,6 +40,8 @@
 
 <script>
 import { mapState, mapActions } from "vuex"
+import axios from "axios"
+
 export default {
   name: "login",
   data() {
@@ -50,7 +54,23 @@ export default {
     ...mapState(["isLogin", "isLoginError"])
   },
   methods: {
-    ...mapActions(["login"])
+    ...mapActions(["login"]),
+    test() {
+      axios
+        .get("https://reqres.in/api/users?page=2")
+        .then(res => {
+          // handle success
+          console.log(res)
+        })
+        .catch(err => {
+          // handle error
+          console.log(err)
+        })
+        .then(() => {
+          console.log("test")
+          // always executed
+        })
+    }
   }
 }
 </script>
