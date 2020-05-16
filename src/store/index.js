@@ -1,6 +1,7 @@
 import Vue from "vue"
 import Vuex from "vuex"
 import router from "../router"
+import axios from "axios"
 
 Vue.use(Vuex)
 
@@ -45,17 +46,49 @@ export default new Vuex.Store({
   },
   actions: {
     // 로그인 시도
-    login({ state, commit }, loginObj) {
-      let selectedUser = null
-      state.allUser.forEach(user => {
-        if (user.email === loginObj.email) selectedUser = user
-      })
-      if (selectedUser === null || selectedUser.password !== loginObj.password)
-        commit("loginError")
-      else {
-        commit("loginSuccess", selectedUser)
-        router.push({ name: "mypage" })
-      }
+    login({ commit }, loginObj) {
+      axios
+        .post("https://reqres.in/api/login", loginObj) //포스트 2번째 인자는 BODY의 파라메터를 가져올 수 있음
+        .then(res => {
+          // 성공 시 토큰 (실제로는 유저아이디 받아옴)
+          // 해더에 포함하여 유저정보 요청
+          let token = res.data.token
+          let config = {
+            // 헤더값을 설정할 수 있음
+            headers: {
+              "access-token": token
+            }
+          }
+          axios
+            .get("https://reqres.in/api/users/2", config) // GET방식은 config가 옴
+            .then(response => {
+              let userInfo = {
+                id: response.data.data.id,
+                first_name: response.data.data.first_name,
+                last_name: response.data.data.last_name,
+                avatar: response.data.data.avatar
+              }
+              commit("loginSuccess", userInfo)
+            })
+            .catch(error => {
+              alert("이메일과 비밀번호를 확인하세요.")
+              console.log(error)
+            })
+        })
+        .catch(err => {
+          // handle error
+          console.log(err)
+        })
+      // let selectedUser = null
+      // state.allUser.forEach(user => {
+      //   if (user.email === loginObj.email) selectedUser = user
+      // })
+      // if (selectedUser === null || selectedUser.password !== loginObj.password)
+      //   commit("loginError")
+      // else {
+      //   commit("loginSuccess", selectedUser)
+      //   router.push({ name: "mypage" })
+      // }
     },
     //로그아웃
     logout({ commit }) {
