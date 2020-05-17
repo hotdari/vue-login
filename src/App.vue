@@ -1,56 +1,87 @@
 <template>
-  <v-app>
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+  <v-app id="inspire">
+    <v-navigation-drawer v-model="drawer" app>
+      <v-list dense>
+        <v-list-item router :to="{ name: 'home' }">
+          <v-list-item-action>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="isLogin === false" router :to="{ name: 'login' }">
+          <v-list-item-action>
+            <v-icon>mdi-mail</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>로그인</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-else router :to="{ name: 'mypage' }">
+          <v-list-item-action>
+            <v-icon>mdi-mail</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>마이페이지</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
+    <v-app-bar app color="indigo" dark>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Application</v-toolbar-title>
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-menu offset-y v-if="isLogin">
+          <template v-slot:activator="{ on }">
+            <v-btn slot="activator" color="primary" dark icon v-on="on">
+              <v-icon color="#ffffff">mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item>
+              <v-list-item-title router :to="{ name: 'mypage' }"
+                >마이페이지</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title @click="$store.dispatch('logout')"
+                >로그아웃</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-btn v-else router :to="{ name: 'login' }" dark>Log In</v-btn>
+      </v-toolbar-items>
     </v-app-bar>
 
     <v-content>
-      <HelloWorld />
+      <router-view />
     </v-content>
+    <v-footer color="indigo" app>
+      <span class="white--text">&copy; 2019</span>
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld"
+import { mapState, mapActions } from "vuex"
 
 export default {
   name: "App",
-
-  components: {
-    HelloWorld
+  props: {
+    source: String
   },
-
   data: () => ({
-    //
-  })
+    drawer: null
+  }),
+  // methods: {
+  //   ...mapActions(["logout"])
+  // },
+  computed: {
+    ...mapState(["isLogin"])
+  }
 }
 </script>

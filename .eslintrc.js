@@ -13,9 +13,10 @@ module.exports = {
     "prettier/prettier": [
       "warn",
       {
-        "semi": false,
-        "trailingComma": "none",
+        semi: false,
+        trailingComma: "none"
       }
-    ]
+    ],
+    "no-unused-vars": "off"
   }
-};
+}
