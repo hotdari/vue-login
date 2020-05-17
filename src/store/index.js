@@ -42,38 +42,22 @@ export default new Vuex.Store({
       state.isLogin = false
       state.isLoginError = false
       state.userInfo = null
+      localStorage.removeItem("access_token")
     }
   },
   actions: {
     // 로그인 시도
-    login({ commit }, loginObj) {
+    login({ dispatch }, loginObj) {
+      //로그인 -> 토큰반환
       axios
         .post("https://reqres.in/api/login", loginObj) //포스트 2번째 인자는 BODY의 파라메터를 가져올 수 있음
         .then(res => {
           // 성공 시 토큰 (실제로는 유저아이디 받아옴)
           // 해더에 포함하여 유저정보 요청
           let token = res.data.token
-          let config = {
-            // 헤더값을 설정할 수 있음
-            headers: {
-              "access-token": token
-            }
-          }
-          axios
-            .get("https://reqres.in/api/users/2", config) // GET방식은 config가 옴
-            .then(response => {
-              let userInfo = {
-                id: response.data.data.id,
-                first_name: response.data.data.first_name,
-                last_name: response.data.data.last_name,
-                avatar: response.data.data.avatar
-              }
-              commit("loginSuccess", userInfo)
-            })
-            .catch(error => {
-              alert("이메일과 비밀번호를 확인하세요.")
-              console.log(error)
-            })
+          // 토큰 -> 로컬스토리지에 저장
+          localStorage.setItem("access_token", token)
+          dispatch("getMemberInfo")
         })
         .catch(err => {
           // handle error
@@ -94,6 +78,31 @@ export default new Vuex.Store({
     logout({ commit }) {
       commit("logout")
       router.push({ name: "home" })
+    },
+    getMemberInfo({ commit }) {
+      // 로컬스토리지 토큰 -> 불러와서 사용
+      let token = localStorage.getItem("access_token")
+      let config = {
+        // 헤더값을 설정할 수 있음
+        headers: {
+          "access-token": token
+        }
+      }
+      axios
+        .get("https://reqres.in/api/users/2", config) // GET방식은 config가 옴
+        .then(response => {
+          let userInfo = {
+            id: response.data.data.id,
+            first_name: response.data.data.first_name,
+            last_name: response.data.data.last_name,
+            avatar: response.data.data.avatar
+          }
+          commit("loginSuccess", userInfo)
+        })
+        .catch(error => {
+          alert("이메일과 비밀번호를 확인하세요.")
+          console.log(error)
+        })
     }
   },
   modules: {}
